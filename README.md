@@ -1,51 +1,65 @@
-# Электронный дневник школы
+# Hack the e-diary of the school
 
-Этот сайт - интерфейс для учеников школы. Здесь можно посмотреть оценки, расписание и прочую открытую информацию. Учителя заполняют базу данных через другой сайт. Ставят там оценки и т.д.
+This project helps change the information about schoolkids' academic progress in the school diary database.
+It is assumed that we have access to the database, where all the grades where posted. Firstly, we will need to deploy [the diary site](https://github.com/devmanorg/e-diary/tree/master).
 
-## Описание моделей
 
-На сайте есть ученики: `Schoolkid`. Класс ученика определяется через комбинацию его полей `year_of_study` — год обучения и `group_letter` — литера класса. Вместе получается, например, 10А. Ученик связан со следующими моделями:
+### How to use this script to change your grades
 
-- `Mark` — оценка на уроке, от 2 до 5.
-- `Commendation` — похвала от учителя, за особые достижения.
-- `Chastisement` — замечание от учителя, за особые проступки.
 
-Все 3 объекта связаны не только с учителем, который их создал, но и с учебным предметом (`Subject`). Примеры `Subject`:
+1. Copy the `scripts.py` file and place it on the e-diary server in `e-diary/datacenter/` folder.
+2. Run this code on the server console to open the Django shell:
+   ```console
+   python3 manage.py shell
+   ```
 
-- Математика 8 класса
-- Геометрия 11 класса
-- Русский язык 1 класса
-- Русский язык 4 класса
+   Output:
+   ```
+    Python 3.10.6 (main, Mar 10 2023, 10:55:28) [GCC 11.3.0] on linux
+    Type "help", "copyright", "credits" or "license" for more information.
+    (InteractiveConsole)
+   ```
+3. Import the script which was replaced and run it in the shell.
+   ```
+   from datacenter import scripts
+   scripts.main()
+   ``` 
 
-`Subject` определяется не только названием, но и годом обучения, для которого учебный предмет проходит.
+   Output:
+   ```
+   Введите "Фамилию Имя Отчество" ученика: 
+   ```
+   
+   Enter full name of schoolkid who's grades yor're going to change (e.g. `Фролов Иван`):
 
-За расписание уроков отвечает модель `Lesson`. Каждый объект `Lesson` — урок в расписании. У урока есть комбинация `year_of_study` и `group_letter`, благодаря ей можно узнать для какого класса проходит этот урок. У урока есть `subject` и `teacher`, которые отвечают на вопросы "что за урок" и "кто ведёт". У урока есть `room` — номер кабинета, где он проходит. Урок проходит в дату `date`.
+   ```
+   Введите "Фамилию Имя Отчество" ученика: Фролов Иван
+   ```
+   
+   Output:
+   ```
+   Все двойки и тройки были успешно заменены на пятерки.
+   Все замечания от учителей были успешно удалены.
+   За последний урок по каждому из предметов была добавлена похвала от учителя.
+   ```
 
-Расписание в школе строится по слотам:
+   Quit the console by pressing `Ctrl` + `D`.
 
-- 8:00-8:40 — 1 урок
-- 8:50-9:30 — 2 урок
-- ...
+4. To make sure that all the grades were changed visit the site.
+   
+   ```console
+   python3 manage.py runserver
+   ```
 
-У каждого `Lesson` есть поле `timeslot`, которое объясняет, какой номер у этого урока в расписании.
+   Output:
+   ```
+   System check identified no issues (0 silenced).
+   June 05, 2023 - 05:01:10
+   Django version 2.2.24, using settings 'project.settings'
+   Starting development server at http://127.0.0.1:8000/
+   Quit the server with CONTROL-C.
+   ```
+   
 
-## Запуск
-
-- Скачайте код
-- Установите зависимости командой `pip install -r requirements.txt`
-- Создайте БД командой `python3 manage.py migrate`
-- Запустите сервер командой `python3 manage.py runserver`
-
-## Переменные окружения
-
-Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` рядом с `manage.py` и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`.
-
-Доступны 3 переменные:
-- `DEBUG` — дебаг-режим. Поставьте True, чтобы увидеть отладочную информацию в случае ошибки.
-- `SECRET_KEY` — секретный ключ проекта
-- `ALLOWED_HOSTS` — см [документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts).
-- `DATABASE_NAME` — путь до базы данных, например: `schoolbase.sqlite3`
-
-## Цели проекта
-
-Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org).
+### Project Goals
+The code is written for educational purposes.
