@@ -2,6 +2,19 @@ from random import choice
 from datacenter.models import *
 
 
+WORDS_OF_PRAISE = [
+    "Молодец!", "Отлично!", "Хорошо!", "Гораздо лучше, чем я ожидал!",
+    "Ты меня приятно удивил!", "Великолепно!", "Прекрасно!",
+    "Ты меня очень обрадовал!", "Именно этого я давно ждал от тебя!",
+    "Сказано здорово – просто и ясно!", "Ты, как всегда, точен!",
+    "Очень хороший ответ!", "Талантливо!", "Ты сегодня прыгнул выше головы!",
+    "Я тобой горжусь!", "С каждым разом у тебя получается всё лучше!",
+    "Мы с тобой не зря поработали!", "Я вижу, как ты стараешься!",
+    "Ты растешь над собой!", "Ты многое сделал, я это вижу!",
+    "Теперь у тебя точно все получится!"
+]
+
+
 def fix_marks(schoolkid: Schoolkid):
     '''Corrects grades by replacing all bad grades (2s and 3s)
     with 5s for the specified student'''
@@ -24,18 +37,7 @@ def create_commendation(subject_name: str, schoolkid: Schoolkid):
     subject = Subject.objects.filter(title__icontains=subject_name,
                                      year_of_study=schoolkid.year_of_study
                                      ).first()
-    words_of_praise = [
-        "Молодец!", "Отлично!", "Хорошо!", "Гораздо лучше, чем я ожидал!",
-        "Ты меня приятно удивил!", "Великолепно!", "Прекрасно!",
-        "Ты меня очень обрадовал!", "Именно этого я давно ждал от тебя!",
-        "Сказано здорово – просто и ясно!", "Ты, как всегда, точен!",
-        "Очень хороший ответ!", "Талантливо!", "Ты сегодня прыгнул выше головы!",
-        "Я тобой горжусь!", "С каждым разом у тебя получается всё лучше!",
-        "Мы с тобой не зря поработали!", "Я вижу, как ты стараешься!",
-        "Ты растешь над собой!", "Ты многое сделал, я это вижу!",
-        "Теперь у тебя точно все получится!"
-    ]
-    random_praise = choice(words_of_praise)
+    random_praise = choice(WORDS_OF_PRAISE)
     last_lesson = Lesson.objects.filter(
         group_letter=schoolkid.group_letter,
         year_of_study=schoolkid.year_of_study,
