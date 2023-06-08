@@ -18,11 +18,8 @@ WORDS_OF_PRAISE = [
 def fix_marks(schoolkid: Schoolkid):
     '''Corrects grades by replacing all bad grades (2s and 3s)
     with 5s for the specified student'''
-
-    poor_grades = Mark.objects.filter(schoolkid=schoolkid, points__in=[2, 3])
-    for poor_grade in poor_grades:
-        poor_grade.points = 5
-        poor_grade.save()
+    Mark.objects.filter(schoolkid=schoolkid, points__in=[2, 3]).update(
+        points=5)
 
 
 def remove_chastisements(schoolkid: Schoolkid):
@@ -33,12 +30,11 @@ def remove_chastisements(schoolkid: Schoolkid):
 def create_commendation(subject_name: str, schoolkid: Schoolkid):
     '''Finds the last lesson in a given subject for a specified student
     and creates a praise, randomly selected from a list of praises'''
-
     subject = Subject.objects.filter(title__icontains=subject_name,
                                      year_of_study=schoolkid.year_of_study
                                      ).first()
     random_praise = choice(WORDS_OF_PRAISE)
-    last_lesson = Lesson.objects.filter(
+    last_lesson = Lesson.objects.select_related('teacher').filter(
         group_letter=schoolkid.group_letter,
         year_of_study=schoolkid.year_of_study,
         subject__title=subject.title).order_by('-date').first()
@@ -54,8 +50,8 @@ def main():
     for given subjects for specified child'''
     while True:
         try:
-            child = Schoolkid.objects.get(full_name__icontains=input(
-                'Введите "Фамилию Имя Отчество" ученика: '))
+            child = Schoolkid.objects.get(
+                full_name__icontains=input('Введите ФИО ученика: '))
             break
         except Schoolkid.DoesNotExist:
             print("Ученика с подобным ФИО не существует.",
