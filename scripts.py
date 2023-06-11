@@ -44,7 +44,7 @@ def create_commendations(subject_names: list, schoolkid: Schoolkid):
         last_lesson = Lesson.objects.select_related('teacher').filter(
             group_letter=schoolkid.group_letter,
             year_of_study=schoolkid.year_of_study,
-            subject__title=subject.title).order_by('-date').first()
+            subject=subject).order_by('-date').first()
         Commendation.objects.create(text=random_praise,
                                     created=last_lesson.date,
                                     schoolkid=schoolkid,
